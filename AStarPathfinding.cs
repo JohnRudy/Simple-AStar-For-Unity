@@ -68,10 +68,14 @@ public class AStarPathfinding : AStarNodeGrid {
 
                 foreach( AStarNode node in neighbours ) {
                     if( !node.occupied && !closed.Contains(node) ) {
-                        int newMoveCost = c_Node.gCost + CellCost(c_Node, node);
+                        
+                        // Updated cost calculation
+                        int newGCost = c_Node.gCost + 10;
+                        int newHCost = CellCost(c_Node, e_Node);
+                        
                         if( newMoveCost < node.gCost || !open.Contains(node) ) {
-                            node.gCost = newMoveCost;
-                            node.hCost = CellCost(node, e_Node);
+                            node.gCost = newGCost;
+                            node.hCost = newHCost;
                             node.parent = c_Node;
                             if( !open.Contains(node) ) {
                                 open.Add(node);
@@ -162,11 +166,17 @@ public class AStarPathfinding : AStarNodeGrid {
     }
 
 
-    //TODO: LOOK INTO OTHER HEURISTIC METHODS
-    //Currently the gCost explodes in size. 
-    //Taxicab / Manhattan heuristic?
+    // UPDATED Method. Manhattan is fine even with diagonal from tests
     public int CellCost ( AStarNode nodeA, AStarNode nodeB ) {
-        int distXg = Mathf.Abs(nodeA.x - nodeB.x);
+        // New method
+        // Using manhattan works fine
+        int cost =(int) Mathf.Abs ( nodeA.worldPos.x - nodeB.worldPos.x )
+                 +(int) Mathf.Abs ( nodeA.worldPos.y - nodeB.worldPos.y );
+
+        return cost * 10;
+        
+        // Old way
+        /*int distXg = Mathf.Abs(nodeA.x - nodeB.x);
         int distYg = Mathf.Abs(nodeA.y - nodeB.y);
 
         int cost;
@@ -178,6 +188,6 @@ public class AStarPathfinding : AStarNodeGrid {
             cost = 14 * distXg + 10 * ( distYg - distXg ) + nodeA.gCost;
         }
 
-        return cost;
+        return cost;*/
     }
 }
